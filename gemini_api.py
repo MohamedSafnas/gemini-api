@@ -4,10 +4,11 @@ import os
 
 app = Flask(__name__)
 
-# Replace this with your actual API key
-genai.configure(api_key="AIzaSyBDUyo-bQHcvndbqxy5wLUDVV6-ZrrgFUs")  # ← Replace with your Gemini key
+# Replace with your actual Gemini API key
+genai.configure(api_key="AIzaSyBDUyo-bQHcvndbqxy5wLUDVV6-ZrrgFUs")
 
-model = genai.GenerativeModel("gemini-pro")
+# ✅ Correct model name
+model = genai.GenerativeModel("models/gemini-pro")
 
 @app.route("/", methods=["GET"])
 def home():
@@ -28,4 +29,3 @@ def generate_steps():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
-
