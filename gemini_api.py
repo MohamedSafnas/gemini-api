@@ -23,12 +23,9 @@ def generate_steps():
 
         print("🎯 Goal:", goal)
 
-        # ✅ Create model instance
-        model = genai.GenerativeModel(model_name="gemini-pro")
-
-        # ✅ Generate content
-        prompt = f"Suggest 5 clear, step-by-step instructions to achieve this goal:\n{goal}"
-        response = model.generate_content(prompt)
+    
+        model = genai.GenerativeModel("models/gemini-pro")
+        response = model.generate_content(f"Suggest 5 step-by-step instructions to achieve this goal: {goal}")
 
         print("✅ Response:", response.text)
 
