@@ -4,12 +4,12 @@ import os
 
 app = Flask(__name__)
 
-# Replace with your actual Gemini API key
-genai.configure(api_key="AIzaSyBDUyo-bQHcvndbqxy5wLUDVV6-ZrrgFUs")
+# ✅ Set your Gemini API key
+genai.configure(api_key="AIzaSyBDUyo-bQHcvndbqxy5wLUDVV6-ZrrgFUs")  # Replace with your own key
 
 @app.route("/", methods=["GET"])
 def home():
-    return "Gemini API is running!"
+    return "✅ Gemini API is running!"
 
 @app.route("/generate", methods=["POST"])
 def generate_steps():
@@ -23,15 +23,21 @@ def generate_steps():
 
         print("🎯 Goal:", goal)
 
-        model = genai.GenerativeModel('gemini-pro')
-        response = model.generate_content(f"Suggest 5 step-by-step instructions to achieve this goal: {goal}")
-        print("✅ Response:", response)
+        # ✅ Create model instance
+        model = genai.GenerativeModel(model_name="gemini-pro")
+
+        # ✅ Generate content
+        prompt = f"Suggest 5 clear, step-by-step instructions to achieve this goal:\n{goal}"
+        response = model.generate_content(prompt)
+
+        print("✅ Response:", response.text)
 
         return jsonify({"steps": response.text})
 
     except Exception as e:
-        print("❌ Error:", e)
+        print("❌ Exception:", e)
         return jsonify({"error": str(e)}), 500
 
+# ✅ Run Flask on correct host and port for Render
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
