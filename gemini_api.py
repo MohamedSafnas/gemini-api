@@ -7,9 +7,6 @@ app = Flask(__name__)
 # Replace with your actual Gemini API key
 genai.configure(api_key="AIzaSyBDUyo-bQHcvndbqxy5wLUDVV6-ZrrgFUs")
 
-# ✅ Correct model name
-model = genai.GenerativeModel("models/gemini-pro")
-
 @app.route("/", methods=["GET"])
 def home():
     return "Gemini API is running!"
@@ -19,7 +16,10 @@ def generate_steps():
     try:
         data = request.get_json()
         goal = data.get("goal", "")
-        prompt = f"Give me 5 clear step-by-step instructions to achieve this goal:\n\n{goal}"
+        prompt = f"Give me 5 step-by-step instructions to achieve this goal:\n{goal}"
+
+        # Use model name as "gemini-pro" directly — not with "models/"
+        model = genai.GenerativeModel("gemini-pro")
 
         response = model.generate_content(prompt)
 
