@@ -2,6 +2,7 @@ services:
   - type: web
     name: gemini-api
     env: python
+    region: singapore
     plan: free
-    buildCommand: ""
-    startCommand: "python gemini_api.py"
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn gemini_api:app
