@@ -24,7 +24,7 @@ def generate_steps():
         print("🎯 Goal:", goal)
 
     
-        model = genai.GenerativeModel("gemini-1.5-pro")
+        model = genai.GenerativeModel("gemini-1.5-flash")
 
         response = model.generate_content(f"Suggest 5 step-by-step instructions to achieve this goal: {goal}")
 
