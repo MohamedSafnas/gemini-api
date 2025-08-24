@@ -78,30 +78,36 @@ def predict():
 
     # Goal-based prediction
     elif goal_name and completion is not None and created_date: 
-
-        try: 
+        try:
             model = genai.GenerativeModel("gemini-1.5-flash")
-
             prompt = (
                 f"The user has a goal: '{goal_name}'. "
                 f"They are {completion}% complete, and started on {created_date}. "
                 f"Estimate when they might finish this goal and give motivational advice. "
                 f"Return JSON with keys: 'expectedFinishDate', 'confidence', and 'advice'."
-            ) 
+            )
 
             response = model.generate_content(prompt)
 
             if response.candidates and response.candidates[0].content.parts:
-                 analysis_text = response.candidates[0].content.parts[0].text
+                analysis_text = response.candidates[0].content.parts[0].text
+                import json
+                try:
+                    # Parse AI JSON string
+                    analysis_json = json.loads(analysis_text)
+                except json.JSONDecodeError:
+                    # Fallback if AI didn’t return valid JSON
+                    analysis_json = {"expectedFinishDate": None, "confidence": 0, "advice": analysis_text}
             else:
-                 analysis_text = "No prediction generated."
+                analysis_json = {"expectedFinishDate": None, "confidence": 0, "advice": "No prediction generated."}
 
-            return jsonify({"prediction": analysis_text})
+            # Return parsed JSON directly
+            return jsonify(analysis_json)
 
         except Exception as e:
-            return jsonify({"error": str(e)}), 500 
-        
-    else: 
+            return jsonify({"error": str(e)}), 500
+
+    else:
         return jsonify({"prediction": "Insufficient or invalid data for prediction"}), 400
 
 
