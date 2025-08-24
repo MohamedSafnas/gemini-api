@@ -77,35 +77,27 @@ def predict():
 
 
     # Goal-based prediction
-    elif goal_name and completion is not None and created_date:
-        try:
-            model = genai.GenerativeModel("gemini-1.5-flash")
-            prompt = (
-                f"The user has a goal: '{goal_name}'. "
-                f"They are {completion}% complete, and started on {created_date}. "
-                f"Estimate when they might finish this goal and give motivational advice. "
-                f"Return JSON with keys: 'expectedFinishDate', 'confidence', and 'advice'."
-            )
-            response = model.generate_content(prompt)
+    elif goal_name and completion is not None and created_date: 
 
-            if response.candidates and response.candidates[0].content.parts:
-                import json
-                analysis_text = response.candidates[0].content.parts[0].text
-                try:
-                    analysis_json = json.loads(analysis_text)
-                except:
-                    analysis_json = {"raw": analysis_text}
-            else:
-                analysis_json = {"error": "No prediction generated."}
+        try: 
+            created = datetime.strptime(created_date, "%Y-%m-%d") 
+            days_since_created = (datetime.now() - created).days 
+            remaining_percentage = 100 - completion 
 
-            return jsonify(analysis_json)
+            # Estimate days to finish based on progress 
+            estimated_days_to_finish = int(days_since_created / (completion / 100) * (remaining_percentage / 100)) 
+            finish_date = datetime.now() + timedelta(days=estimated_days_to_finish) 
+            confidence = 70 
 
-        except Exception as e:
-            return jsonify({"error": str(e)}), 500
+            prediction_text = (f"Based on your {completion}% progress in {days_since_created} days, " f"you'll complete '{goal_name}' on {finish_date.strftime('%B %d, %Y')} " f"({confidence}% confidence). If you finish, you can achieve more advanced goals!")
 
-    else:
+            return jsonify({"prediction": prediction_text}) 
+        
+        except Exception as e: 
+            return jsonify({"prediction": f"Error: {str(e)}"}), 400 
+        
+    else: 
         return jsonify({"prediction": "Insufficient or invalid data for prediction"}), 400
-
 
 
 
