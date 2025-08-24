@@ -102,7 +102,8 @@ def predict():
                 analysis_json = {"expectedFinishDate": None, "confidence": 0, "advice": "No prediction generated."}
 
             # Return parsed JSON directly
-            return jsonify(analysis_json)
+            return jsonify({"prediction": analysis_json})
+
 
         except Exception as e:
             return jsonify({"error": str(e)}), 500
