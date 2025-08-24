@@ -92,18 +92,30 @@ def predict():
 
             if response.candidates and response.candidates[0].content.parts:
                 analysis_text = response.candidates[0].content.parts[0].text
-                try:
-                   # Convert string to dict if it's JSON
-                   import json
-                   analysis_json = json.loads(analysis_text)
-                except:
-                   # If AI did not return valid JSON, wrap it
-                   analysis_json = {"raw": analysis_text}
-            else:
-                analysis_json = {"error": "No prediction generated."}
 
-            # Wrap in "prediction" so Android app gets expected key
+                # Clean the AI output: remove backticks and extra spaces
+                analysis_text = analysis_text.strip().replace("```json", "").replace("```", "").strip()
+
+                import json
+                try:
+                   # Try to parse AI output
+                   analysis_json = json.loads(analysis_text)
+                except json.JSONDecodeError:
+                   # Fallback to a safe default structure
+                   analysis_json = {
+                    "expectedFinishDate": None,
+                    "confidence": 0,
+                    "advice": analysis_text
+                }
+            else:
+                analysis_json = {
+                "expectedFinishDate": None,
+                "confidence": 0,
+                "advice": "No prediction generated."
+            }
+
             return jsonify({"prediction": analysis_json})
+
 
         except Exception as e:
             return jsonify({"error": str(e)}), 500
