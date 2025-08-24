@@ -61,7 +61,7 @@ def predict():
             prompt = (
                 f"If someone does '{title}' for {duration} hours {frequency}, "
                 f"what are the possible advantages and disadvantages? "
-                f"Explain in briefly."
+                f"list briefly."
             )
             response = model.generate_content(prompt)
 
