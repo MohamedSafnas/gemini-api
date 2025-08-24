@@ -1,6 +1,8 @@
 from flask import Flask, request, jsonify
 import google.generativeai as genai
 import os
+import markdown
+
 
 
 from datetime import datetime, timedelta
@@ -114,7 +116,9 @@ def predict():
                 "advice": "No prediction generated."
             }
 
-            return jsonify({"prediction": analysis_json})
+            formatted_html = markdown.markdown(analysis_json)
+            return jsonify({"prediction": formatted_html})
+            
 
 
         except Exception as e:
