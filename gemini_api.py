@@ -116,9 +116,8 @@ def predict():
                 "advice": "No prediction generated."
             }
 
-            formatted_html = markdown.markdown(analysis_json)
-            return jsonify({"prediction": formatted_html})
-            
+
+            return jsonify({"prediction": analysis_json})
 
 
         except Exception as e:
