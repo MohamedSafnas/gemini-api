@@ -80,21 +80,26 @@ def predict():
     elif goal_name and completion is not None and created_date: 
 
         try: 
-            created = datetime.strptime(created_date, "%Y-%m-%d") 
-            days_since_created = (datetime.now() - created).days 
-            remaining_percentage = 100 - completion 
+            model = genai.GenerativeModel("gemini-1.5-flash")
 
-            # Estimate days to finish based on progress 
-            estimated_days_to_finish = int(days_since_created / (completion / 100) * (remaining_percentage / 100)) 
-            finish_date = datetime.now() + timedelta(days=estimated_days_to_finish) 
-            confidence = 70 
+            prompt = (
+                f"The user has a goal: '{goal_name}'. "
+                f"They are {completion}% complete, and started on {created_date}. "
+                f"Estimate when they might finish this goal and give motivational advice. "
+                f"Return JSON with keys: 'expectedFinishDate', 'confidence', and 'advice'."
+            ) 
 
-            prediction_text = (f"Based on your {completion}% progress in {days_since_created} days, " f"you'll complete '{goal_name}' on {finish_date.strftime('%B %d, %Y')} " f"({confidence}% confidence). If you finish, you can achieve more advanced goals!")
+            response = model.generate_content(prompt)
 
-            return jsonify({"prediction": prediction_text}) 
-        
-        except Exception as e: 
-            return jsonify({"prediction": f"Error: {str(e)}"}), 400 
+            if response.candidates and response.candidates[0].content.parts:
+                 analysis_text = response.candidates[0].content.parts[0].text
+            else:
+                 analysis_text = "No prediction generated."
+
+            return jsonify({"prediction": analysis_text})
+
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500 
         
     else: 
         return jsonify({"prediction": "Insufficient or invalid data for prediction"}), 400
